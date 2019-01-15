@@ -1,6 +1,11 @@
 package com.example.pc252.expendabletextview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.PageTransformer;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +32,13 @@ public class MainActivity extends AppCompatActivity {
         myViewPager=(ViewPager)findViewById(R.id.myViewPager);
         myViewPager.setOffscreenPageLimit(3);
         imageList = new int[]{R.drawable.preview0,R.drawable.preview1,R.drawable.preview2,
-                R.drawable.preview3,R.drawable.preview4,R.drawable.preview5};
+                R.drawable.preview3,R.drawable.preview4,R.drawable.preview5,
+                R.drawable.preview6,R.drawable.preview7,R.drawable.preview8,
+                R.drawable.preview9,R.drawable.preview10,R.drawable.preview11,
+                R.drawable.preview12,R.drawable.preview13,R.drawable.preview14,
+                R.drawable.preview15,R.drawable.preview16,R.drawable.preview17,
+                R.drawable.preview18,R.drawable.preview19,R.drawable.preview20,
+                R.drawable.preview21,R.drawable.preview22,R.drawable.preview23};
         myViewpagerAdapter=new MyViewpagerAdapter(getApplicationContext());
         myTramform=new MyTrasform();
         myViewPager.setPageTransformer(true,myTramform);
@@ -68,15 +80,19 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            Log.d("zhangrui","======instantiateItem======");
             ImageView imageviewr=new ImageView(pagerAdapterContext);
-            imageviewr.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageviewr.setBackgroundResource(imageList[position]);
+            imageviewr.setScaleType(ImageView.ScaleType.CENTER);
+//            imageviewr.setBackgroundResource(imageList[position]);
+            Bitmap ZjBitmap = readBitMap(pagerAdapterContext,imageList[position]);
+            imageviewr.setImageBitmap(ZjBitmap);
             container.addView(imageviewr);
             return imageviewr;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+            Log.d("zhangrui","======destroyItem======");
             container.removeView((View)object);
         }
 
@@ -89,6 +105,37 @@ public class MainActivity extends AppCompatActivity {
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
+    }
+
+
+    public Bitmap readBitMap(Context context, int resId) {
+         BitmapFactory.Options opt = new BitmapFactory.Options();
+         opt.inPreferredConfig = Bitmap.Config.RGB_565;
+         opt.inPurgeable = true;
+         opt.inInputShareable = true;
+         InputStream is = context.getResources().openRawResource(resId);//获取资源图片
+         Bitmap temp = BitmapFactory.decodeStream(is, null, opt);
+         Bitmap newtemp = setImgSize(temp,400,700);
+        if(temp != null){
+            temp.recycle();
+            temp = null;
+        }
+         return /*BitmapFactory.decodeStream(is, null, opt)*/newtemp;
+         }
+
+    public Bitmap setImgSize(Bitmap bm, int newWidth ,int newHeight){
+        // 获得图片的宽高.
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        // 计算缩放比例.
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // 取得想要缩放的matrix参数.
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        // 得到新的图片.
+        Bitmap newbm = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
+        return newbm;
     }
 
 }
