@@ -53,20 +53,28 @@ public class MainActivity extends AppCompatActivity {
              float scaleFactor = Math.max(min_scale, 1 - Math.abs(position));
              float rotate = 20 * Math.abs(position);
              Log.d("zhangrui","position="+position);
-             if (position < -1) {
-
-             } else if (position < 0) {
+             if (position < -1) {// [-Infinity,-1)//This page is way off-screen to the left.
+                 page.setAlpha(0.5f);
+             } else if (position < 0) { // [-1,0]Use //the default slide transition when moving to the left page
+                 page.setAlpha(0.5f);
                  page.setScaleX(scaleFactor);
                  page.setScaleY(scaleFactor);
                  page.setRotationY(rotate);
-             } else if (position >= 0 && position < 1) {
+             } else if (position >= 0 && position < 1) { // (0,1]// Fade the page out.
+                 page.setAlpha(1 - position);
                  page.setScaleX(scaleFactor);
                  page.setScaleY(scaleFactor);
                  page.setRotationY(-rotate);
-             } else if (position >= 1) {
+             } else if (position >= 1) {// (1,+Infinity]
+                 // This page is way off-screen to the right.
+                 page.setAlpha(0.5f);
                  page.setScaleX(scaleFactor);
                  page.setScaleY(scaleFactor);
                  page.setRotationY(-rotate);
+             }else {
+                 // (1,+Infinity]
+                 // This page is way off-screen to the right.
+                 page.setAlpha(0.5f);
              }
          }
      }
