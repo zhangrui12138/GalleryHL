@@ -20,15 +20,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
     private ViewPager myViewPager;
     private MyViewpagerAdapter myViewpagerAdapter;
     private MyTrasform myTramform;
     private int imageList[];
+    private ImageView myImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myImage = (ImageView)findViewById(R.id.backer);
         myViewPager=(ViewPager)findViewById(R.id.myViewPager);
         myViewPager.setOffscreenPageLimit(3);
         imageList = new int[]{R.drawable.preview0,R.drawable.preview1,R.drawable.preview2,
@@ -41,8 +43,13 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.preview21,R.drawable.preview22,R.drawable.preview23};
         myViewpagerAdapter=new MyViewpagerAdapter(getApplicationContext());
         myTramform=new MyTrasform();
+        myViewPager.setOnPageChangeListener(this);
         myViewPager.setPageTransformer(true,myTramform);
         myViewPager.setAdapter(myViewpagerAdapter);
+        //添加虚化背景图
+        myImage.setImageBitmap(readBitMap(getApplicationContext(),imageList[0]));
+        if(myImage != null)  myImage.setAlpha(0.5f);
+        //添加虚化背景图
      }
 
      private class MyTrasform implements PageTransformer {
@@ -52,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
          public void transformPage(View page, float position) {
              float scaleFactor = Math.max(min_scale, 1 - Math.abs(position));
              float rotate = 20 * Math.abs(position);
-             Log.d("zhangrui","position="+position);
              if (position < -1) {// [-Infinity,-1)//This page is way off-screen to the left.
                  page.setAlpha(0.5f);
              } else if (position < 0) { // [-1,0]Use //the default slide transition when moving to the left page
@@ -146,4 +152,22 @@ public class MainActivity extends AppCompatActivity {
         return newbm;
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+      Log.d("zhangrui","onPageSelected position"+position);
+        //添加虚化背景图
+        myImage.setImageBitmap(readBitMap(getApplicationContext(),imageList[position]));
+        if(myImage != null)  myImage.setAlpha(0.5f);
+        //添加虚化背景图
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 }
